@@ -1,6 +1,8 @@
 package com.whiletrue.onlineshop.service.impl;
 
+import com.whiletrue.onlineshop.exception.OrderNotFoundException;
 import com.whiletrue.onlineshop.model.Order;
+import com.whiletrue.onlineshop.model.Product;
 import com.whiletrue.onlineshop.repository.OrderRepository;
 import com.whiletrue.onlineshop.service.OrderService;
 import java.util.List;
@@ -43,5 +45,17 @@ public class OrderServiceImpl implements OrderService {
     public void deleteOrder(Long id) {
         orderRepository.deleteById(id);
         logger.info("Order with ID {} deleted successfully", id);
+    }
+
+    @Override
+    public void addProductToOrder(Long orderId, Product product) {
+        Optional<Order> optionalOrder = orderRepository.findById(orderId);
+        if (optionalOrder.isPresent()) {
+            Order order = optionalOrder.get();
+            order.getProducts().add(product);
+            orderRepository.save(order);
+        } else {
+            throw new OrderNotFoundException("Order not found with id " + orderId);
+        }
     }
 }

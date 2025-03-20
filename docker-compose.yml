@@ -1,0 +1,37 @@
+version: '3.8'
+
+services:
+  online-shop:
+    build: .
+    container_name: online-shop
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/online_shop
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=admin
+      - SPRING_JPA_SHOW_SQL=true
+    depends_on:
+      - postgres
+
+  postgres:
+    image: postgres:15
+    container_name: online-shop-db
+    restart: always
+    environment:
+      POSTGRES_DB: online_shop
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: admin
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    networks:
+      - online-shop-network
+
+volumes:
+  postgres-data:
+
+networks:
+  online-shop-network:
+    driver: bridge
