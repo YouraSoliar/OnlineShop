@@ -8,6 +8,9 @@ import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -21,6 +24,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    @CachePut(value = "products", key = "#product.id")
     public Product createProduct(Product product) {
         Product createdProduct = productRepository.save(product);
         logger.info("Product created successfully with ID: {}", createdProduct.getId());
@@ -28,6 +32,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    @Cacheable(value = "products", key = "#id")
     public Optional<Product> getProductById(Long id) {
         Optional<Product> getProduct = productRepository.findById(id);
         logger.info("Is product with ID: {} - {}", id, getProduct.isPresent());
@@ -40,6 +45,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    @CacheEvict(value = "products", key = "#id")
     public void deleteProduct(Long id) {
         productRepository.deleteById(id);
         logger.info("Product with ID {} deleted successfully", id);

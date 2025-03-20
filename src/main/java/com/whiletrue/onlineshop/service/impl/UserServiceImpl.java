@@ -7,6 +7,9 @@ import com.whiletrue.onlineshop.service.UserService;
 import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -23,6 +26,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @CachePut(value = "users", key = "#user.id")
     public User createUser(User user) {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         User createdUser = userRepository.save(user);
@@ -43,6 +47,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Cacheable(value = "users", key = "#email")
     public Optional<User> getUserByEmail(String email) {
         Optional<User> getUser = userRepository.findByEmail(email);
         logger.info("Is user with email: {} - {}", email, getUser.isPresent());
@@ -50,6 +55,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @CacheEvict(value = "users", key = "#id")
     public void deleteUser(Long id) {
         userRepository.deleteById(id);
         logger.info("User with ID {} deleted successfully", id);

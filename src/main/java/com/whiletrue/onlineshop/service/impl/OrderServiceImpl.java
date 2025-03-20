@@ -10,6 +10,9 @@ import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -23,6 +26,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
+    @CachePut(value = "orders", key = "#order.id")
     public Order createOrder(Order order) {
         Order createdOrder = orderRepository.save(order);
         logger.info("Order created successfully with ID: {}", createdOrder.getId());
@@ -30,6 +34,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
+    @Cacheable(value = "orders", key = "#id")
     public Optional<Order> getOrderById(Long id) {
         Optional<Order> getOrder = orderRepository.findById(id);
         logger.info("Is order with ID: {} - {}", id, getOrder.isPresent());
@@ -42,6 +47,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
+    @CacheEvict(value = "orders", key = "#id")
     public void deleteOrder(Long id) {
         orderRepository.deleteById(id);
         logger.info("Order with ID {} deleted successfully", id);
