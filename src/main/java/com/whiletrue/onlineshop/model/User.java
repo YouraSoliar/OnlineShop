@@ -6,6 +6,9 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.UniqueConstraint;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 
 @Entity
 @Table(name = "users", uniqueConstraints = @UniqueConstraint(columnNames = "email"))
@@ -14,7 +17,11 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String username;
+    @NotBlank(message = "Email can`t be empty")
+    @Email(message = "Email should be valid")
+    @Size(max = 255, message = "Email should not exceed 255 characters")
     private String email;
+    @NotBlank(message = "Password can`t be empty")
     private String password;
 
     public User() {
